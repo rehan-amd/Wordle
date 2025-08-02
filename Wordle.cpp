@@ -1,29 +1,90 @@
 #include "wordle.h"
 
-const int WORD_SIZE = 5;
-const int FILE_SIZE = 16152;
-string WORD;
+string FILE_NAME = "Words.txt";
+int WORD_SIZE = 5;
+int FILE_SIZE = 16152;
+string WORD = "Rehan";
+
+int currentAttempt;
 
 string roundRecord;
 string gameRecord[5];
 
-void gameStart()
+string defaultColorCode = "\033[0m";
+string textColorCode = "\033[93m";
+string errorColorCode = "\033[91m";
+
+string redColorCode = "\033[31m";
+string grayColorCode = "\033[90m";
+string yellowColorCode = "\033[33m";
+string greenColorCode = "\033[92m";
+
+
+void centreOutput()
 {
-	setRandomWordFromFile();
+	cout << "\t\t\t";
+}
 
-	displayTitle();
+void lineSeparator()
+{
+	centreOutput();
 
-	displayInstructions();
-	system("cls");
+	for (int i = 0; i < WORD_SIZE * 2; i++)
+		cout << "--";
+		
+	cout << "-" << endl;
+}
+
+void displayTitle()
+{
+	centreOutput();
+	cout << textColorCode << "   Wordle Knock-Off" << defaultColorCode;
+
+	cout << "\n\n\n\n\n";
+}
+
+void displayInstructions()
+{
+	cout << textColorCode << "-You have to guess a Random Word." << endl;
+	cout << "-You have 5 attempts." << endl;
+	cout << "-There's a color-code to help you with your guess:" << endl
+		<< "\t" << grayColorCode << "GRAY <> Incorrect letter" << endl
+		<< "\t" << yellowColorCode << "YELLOW <> Correct letter, but Incorrect Position" << endl
+		<< "\t" << greenColorCode << "GREEN <> Correct letter and Position" << endl;
+
+	cout << textColorCode << "-Let the Games Begin!!!" << defaultColorCode << endl << endl << endl;
+}
+
+void setWordFile(int difficulty)
+{
+	if (difficulty == 1)
+	{
+		FILE_NAME = "FOUR_LETTERED_WORDS.txt";
+		WORD_SIZE = 4;
+		FILE_SIZE = 2252;
+	}
+	else if (difficulty == 2)
+	{
+		FILE_NAME = "FIVE_LETTERED_WORDS.txt";
+		WORD_SIZE = 5;
+		FILE_SIZE = 16152;
+	}
+	else if (difficulty == 3)
+	{
+		FILE_NAME = "SIX_LETTERED_WORDS.txt";
+		WORD_SIZE = 6;
+		FILE_SIZE = 7260;
+	}
 }
 
 void setRandomWordFromFile()
 {
-	ifstream myFile("Words.txt");
+	ifstream myFile(FILE_NAME);
 
 	if (!myFile.is_open())
 	{
-		cerr << "Error opening file.\n";
+		cout << errorColorCode << "Error! opening file - Try Again Later.\n\n";
+		throw "error";
 		return;
 	}
 
@@ -54,47 +115,59 @@ void setRandomWordFromFile()
 	while (!WORD.empty() && isspace(WORD.back()))
 		WORD.pop_back();
 
+	setWordToUpperCase(WORD);
+
 	myFile.close();
 }
 
-void centreOutput()
+void gameStart()
 {
-	cout << "\t\t\t";
-}
+	displayTitle();
+	displayInstructions();
 
-void lineSeparator()
-{
-	centreOutput();
-	cout << "---------------------" << endl;
-}
+	Input:
+	int difficulty;
+	cout << textColorCode << "Enter Difficulty:-" << endl
+		<< "\t" << greenColorCode << "1 - Easy( 4 Letter Words )" << endl
+		<< "\t" << yellowColorCode << "2 - Medium( 5 Letter Words )" << endl
+		<< "\t" << redColorCode << "3 - Hard( 6 Letter Words )" << endl
+		<< textColorCode << ">>> " << defaultColorCode;
+	
+	if (!(cin >> difficulty))
+	{
+		cout << errorColorCode << "Error!Input is not a Number - Try Again" << defaultColorCode << endl << endl;
+		cin.clear();
+		cin.ignore();
+		
+		goto Input;
+	}
 
-void displayTitle()
-{
-	centreOutput();
-	cout << "   Wordle Knock-Off";
+	if (difficulty < 1 || difficulty > 3)
+	{
+		cout << errorColorCode << "Error! Your Input is Outside the Range - Try Again" << defaultColorCode << endl << endl;
 
-	cout << "\n\n\n\n\n";
-}
+		goto Input;
+	}
 
-void displayInstructions()
-{
-	cout << "-You have to guess a " << WORD_SIZE << " lettered Word." << endl;
-	cout << "-You have 5 attempts." << endl;
-	cout << "-There's a color-code to help you with your guess:" << endl
-		<< "\t" << "GRAY <> Incorrect letter" << endl
-		<< "\t" << "YELLOW <> Correct letter, but Incorrect Position" << endl
-		<< "\t" << "GREEN <> Correct letter and Position" << endl;
+	setWordFile(difficulty);
+	setRandomWordFromFile();
 
-	cout << "-Let the Games Begin!!!" << endl << endl << endl;
-
+	cout << textColorCode << "" << endl << endl;
 	system("pause");
+	system("cls");
+}
+
+void setWordToUpperCase(string& word)
+{
+	for (int i = 0; i < WORD_SIZE; i++)
+		word[i] = toupper(word[i]);
 }
 
 bool isLetterInWord(char letter)
 {
 	for (int i = 0; i < WORD_SIZE; i++)
 	{
-		if (toupper(letter) == toupper(WORD[i]))
+		if (letter == WORD[i])
 			return true;
 	}
 
@@ -103,7 +176,7 @@ bool isLetterInWord(char letter)
 
 bool isEnglishWord(string input)
 {
-	ifstream myFile("Words.txt");
+	ifstream myFile(FILE_NAME);
 	string line, word;
 	int currentLine = 1;
 
@@ -116,6 +189,8 @@ bool isEnglishWord(string input)
 
 		while (!word.empty() && isspace(word.back()))
 			word.pop_back();
+
+		setWordToUpperCase(word);
 
 		if (input == word)
 			return true;
@@ -132,12 +207,13 @@ bool isEnglishWord(string input)
 
 void takeInput(string& variable, int attempt)
 {
-	displayTitle();
+	currentAttempt = 6 - attempt;
 
-	if (attempt != 5)	lineSeparator();
+	displayTitle();
+	if (currentAttempt != 1)	lineSeparator();
 
 	int i;
-	for (i = 0; i < 5 - attempt; i++)
+	for (i = 0; i < currentAttempt - 1; i++)
 	{
 		centreOutput();
 		cout << gameRecord[i] << endl;
@@ -147,32 +223,33 @@ void takeInput(string& variable, int attempt)
 	for (; i < 2; i++)
 		cout << endl;
 
-	cout << "\n" << "\t\t\t\t\t\t\t" << "Attempt No. " << 6 - attempt << endl;
+	cout << "\n" << "\t\t\t\t\t\t\t" << textColorCode << "Attempt No. " << currentAttempt << endl;
 
 Input:
 	string input;
-	cout << "Enter a Word:\t";
+	cout << textColorCode << "Enter a Word:\t" << defaultColorCode;
 	cin >> input;
 
-	if (input.size() != 5)
+	if (input.size() != WORD_SIZE)
 	{
-		cout << "Error! Enter a 5 letter Word - Try Again" << endl << endl;
+		cout << errorColorCode << "Error! Input isn't " << WORD_SIZE << " letters - Try Again" << defaultColorCode << endl << endl;
 		goto Input;
 	}
 
-	for (char character : input)
+	for (int i = 0; i < WORD_SIZE; i++)
 	{
-		if (!isalpha(character))
+		if (!isalpha(input[i]))
 		{
-			cout << "Error! Your Word contains a Non-Alphabet Character - Try Again" << endl << endl;
+			cout << errorColorCode << "Error! Your Word contains a Non-Alphabet Character - Try Again" << defaultColorCode << endl << endl;
 			goto Input;
 		}
 	}
 
-
+	setWordToUpperCase(input);
+	
 	if (!isEnglishWord(input))
 	{
-		cout << "Error! Your Word isn't an English Word - Try Again\n\n";
+		cout << errorColorCode << "Error! \"" << input << "\" isn't an English Word - Try Again" << defaultColorCode << endl << endl;
 		goto Input;
 	}
 
@@ -182,31 +259,27 @@ Input:
 bool isMatch(string guess)
 {
 	for (int i = 0; i < WORD_SIZE; i++)
-	{
-		if (toupper(guess[i]) != toupper(WORD[i]))
+		if (guess[i] != WORD[i])
 			return false;
-	}
 
 	return true;
 }
 
 void displayLetter(char letter, int color)
 {
-	letter = toupper(letter);
-
 	string code;
 
 	if (color == 0)
 	{
-		code = "| \033[90m" + string(1, letter) + " \033[0m";
+		code = "| " + grayColorCode + string(1, letter) + " " + defaultColorCode;
 	}
 	else if (color == 1)
 	{
-		code = "| \033[33m" + string(1, letter) + " \033[0m";
+		code = "| " + yellowColorCode + string(1, letter) + " " + defaultColorCode;
 	}
 	else if (color == 2)
 	{
-		code = "| \033[32m" + string(1, letter) + " \033[0m";
+		code = "| " + greenColorCode + string(1, letter) + " " + defaultColorCode;
 	}
 
 	cout << code;
@@ -215,16 +288,18 @@ void displayLetter(char letter, int color)
 
 void displayWord(string input, int attempt)
 {
+	currentAttempt = 6 - attempt;
+
 	roundRecord.clear();
 
-	int colorCode[WORD_SIZE] = { 0 }; // 0 - gray, 1 - yellow, 2 - green
-	bool usedInWord[WORD_SIZE] = { false };
-	bool usedInInput[WORD_SIZE] = { false };
+	int colorCode[8] = { 0 }; // 0 - gray, 1 - yellow, 2 - green
+	bool usedInWord[8] = { false };
+	bool usedInInput[8] = { false };
 
 	// Step 1: Mark GREEN
 	for (int i = 0; i < WORD_SIZE; i++)
 	{
-		if (toupper(input[i]) == toupper(WORD[i]))
+		if (input[i] == WORD[i])
 		{
 			colorCode[i] = 2; // Green
 			usedInWord[i] = true;
@@ -239,7 +314,7 @@ void displayWord(string input, int attempt)
 
 		for (int j = 0; j < WORD_SIZE; j++)
 		{
-			if (!usedInWord[j] && toupper(input[i]) == toupper(WORD[j]))
+			if (!usedInWord[j] && input[i] == WORD[j])
 			{
 				colorCode[i] = 1; // Yellow
 				usedInWord[j] = true;
@@ -262,31 +337,31 @@ void displayWord(string input, int attempt)
 
 	lineSeparator();
 
-	cout << endl << endl << endl << endl;
-	gameRecord[5 - attempt] = roundRecord;
+	cout << textColorCode << "" << endl << endl << endl << endl;
+	gameRecord[currentAttempt - 1] = roundRecord;
 }
 
-
-
-void displayThanks()
-{
-	cout << "Thank You For Playing. Hope You Had Fun." << endl;
-}
 
 void showRecord()
 {
 	displayTitle();
 
-	cout << "Game Score:-" << endl << endl;
+	cout << textColorCode << "Game Score:-" << defaultColorCode << endl << endl;
 	lineSeparator();
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < currentAttempt; i++)
 	{
 		centreOutput();
 		cout << gameRecord[i] << endl;
 		lineSeparator();
 	}
 
-	cout << endl << endl;
+	cout << textColorCode << "" << endl << endl;
+}
+
+void displayThanks()
+{
+	cout << "Thank You For Playing. Hope You Had Fun." << defaultColorCode << endl << endl;
+	cout << "------------------------------------------------------------------------------------";
 }
 
 void GameWin()
@@ -294,7 +369,7 @@ void GameWin()
 	showRecord();
 
 	cout << endl << endl;
-	cout << "You Won!" << endl;
+	cout << "You Won! You guessed the Word( " << greenColorCode << WORD << textColorCode << " ) in " << currentAttempt << " attempt(s)." << endl;
 	displayThanks();
 }
 
@@ -303,6 +378,6 @@ void GameLost()
 	showRecord();
 
 	cout << endl << endl;
-	cout << "You Lost! You couldn't guesss the Word( \033[32m" << WORD << "\033[0m ) in 5 attempts." << endl;
+	cout << "You Lost! You couldn't guess the Word( " << greenColorCode << WORD << textColorCode << " ) in 5 attempts." << endl;
 	displayThanks();
 }
