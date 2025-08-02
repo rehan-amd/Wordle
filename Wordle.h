@@ -6,22 +6,36 @@
 #include <random>
 using namespace std;
 
-extern const int WORD_SIZE;
-extern const int FILE_SIZE;
+extern string FILE_NAME;
+extern int WORD_SIZE;
+extern int FILE_SIZE;
 extern string WORD;
+
+extern int currentAttempt;
 
 extern string roundRecord;
 extern string gameRecord[5];
 
-void gameStart();
+extern string defaultTextColorCode;
+extern string textColorCode;
+extern string errorColorCode;
 
-void setRandomWordFromFile();
+extern string redColorCode;
+extern string grayColorCode;
+extern string yellowColorCode;
+extern string greenColorCode;
 
 void centreOutput();
 void lineSeparator();
 void displayTitle();
 void displayInstructions();
 
+void setWordFile(int);
+void setRandomWordFromFile();
+
+void gameStart();
+
+void setWordToUpperCase(string&);
 bool isLetterInWord(char);
 bool isEnglishWord(string);
 
