@@ -1,6 +1,7 @@
 #include "wordle.h"
 
 const int WORD_SIZE = 5;
+const int FILE_SIZE = 16152;
 string WORD;
 
 string roundRecord;
@@ -29,7 +30,7 @@ void setRandomWordFromFile()
 	random_device rd;
 	mt19937 gen(rd());
 
-	uniform_int_distribution<> dist(1, 16152);
+	uniform_int_distribution<> dist(1, FILE_SIZE);
 
 	int choosenLine = dist(gen);
 
@@ -61,10 +62,16 @@ void centreOutput()
 	cout << "\t\t\t";
 }
 
+void lineSeparator()
+{
+	centreOutput();
+	cout << "---------------------" << endl;
+}
+
 void displayTitle()
 {
 	centreOutput();
-	cout << "Wordle Knock-Off";
+	cout << "   Wordle Knock-Off";
 
 	cout << "\n\n\n\n\n";
 }
@@ -113,7 +120,7 @@ bool isEnglishWord(string input)
 		if (input == word)
 			return true;
 
-		if (currentLine++ == 16152)
+		if (currentLine++ == FILE_SIZE)
 			break;
 	}
 
@@ -127,11 +134,14 @@ void takeInput(string& variable, int attempt)
 {
 	displayTitle();
 
+	if (attempt != 5)	lineSeparator();
+
 	int i;
 	for (i = 0; i < 5 - attempt; i++)
 	{
 		centreOutput();
 		cout << gameRecord[i] << endl;
+		lineSeparator();
 	}
 
 	for (; i < 2; i++)
@@ -188,15 +198,15 @@ void displayLetter(char letter, int color)
 
 	if (color == 0)
 	{
-		code = "\033[90m" + string(1, letter) + " \033[0m";
+		code = "| \033[90m" + string(1, letter) + " \033[0m";
 	}
 	else if (color == 1)
 	{
-		code = "\033[33m" + string(1, letter) + " \033[0m";
+		code = "| \033[33m" + string(1, letter) + " \033[0m";
 	}
 	else if (color == 2)
 	{
-		code = "\033[32m" + string(1, letter) + " \033[0m";
+		code = "| \033[32m" + string(1, letter) + " \033[0m";
 	}
 
 	cout << code;
@@ -240,40 +250,20 @@ void displayWord(string input, int attempt)
 
 	// Display the word with correct colors
 	cout << endl;
+	lineSeparator();
 	centreOutput();
 	for (int i = 0; i < WORD_SIZE; i++)
 	{
 		displayLetter(input[i], colorCode[i]);
 	}
 
-	cout << endl << endl << endl << endl;
-	gameRecord[5 - attempt] = roundRecord;
+	cout << "|" << endl;
+	roundRecord.append("|");
 
-	//---------------
-	/*
-	roundRecord.clear();
-
-	int colorCode = 0;
-	//case 0 - Gray
-	//case 1 - Yellow
-	//case 2 - Green
-
-	cout << endl; centreOutput();
-	for (int i = 0; i < WORD_SIZE; i++)
-	{
-		if (toupper(input[i]) == toupper(WORD[i]))
-			colorCode = 2;
-		else if (isLetterInWord(input[i]))
-			colorCode = 1;
-		else
-			colorCode = 0;
-
-		displayLetter(input[i], colorCode);
-	}
+	lineSeparator();
 
 	cout << endl << endl << endl << endl;
 	gameRecord[5 - attempt] = roundRecord;
-	*/
 }
 
 
@@ -288,10 +278,12 @@ void showRecord()
 	displayTitle();
 
 	cout << "Game Score:-" << endl << endl;
+	lineSeparator();
 	for (int i = 0; i < 5; i++)
 	{
 		centreOutput();
 		cout << gameRecord[i] << endl;
+		lineSeparator();
 	}
 
 	cout << endl << endl;
@@ -311,6 +303,6 @@ void GameLost()
 	showRecord();
 
 	cout << endl << endl;
-	cout << "You Lost! You couldn't guesss the Word(\033[32m " << WORD << "\033[0m ) in 5 attempts." << endl;
+	cout << "You Lost! You couldn't guesss the Word( \033[32m" << WORD << "\033[0m ) in 5 attempts." << endl;
 	displayThanks();
 }
