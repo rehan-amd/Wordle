@@ -7,6 +7,7 @@
 using namespace std;
 
 extern const int WORD_SIZE;
+extern const int FILE_SIZE;
 extern string WORD;
 
 extern string roundRecord;
@@ -17,6 +18,7 @@ void gameStart();
 void setRandomWordFromFile();
 
 void centreOutput();
+void lineSeparator();
 void displayTitle();
 void displayInstructions();
 
