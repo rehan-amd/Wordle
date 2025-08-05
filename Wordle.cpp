@@ -3,7 +3,7 @@
 string FILE_NAME = "Words.txt";
 int WORD_SIZE = 5;
 int FILE_SIZE = 16152;
-string WORD = "Rehan";
+string WORD = "RHN AMD";
 
 int currentAttempt;
 
@@ -11,13 +11,14 @@ string roundRecord;
 string gameRecord[5];
 
 string defaultColorCode = "\033[0m";
-string textColorCode = "\033[93m";
-string errorColorCode = "\033[91m";
+string textColorCode = "\033[93m"; //Bright Yellow
+string errorColorCode = "\033[91m"; //Light Red
 
-string redColorCode = "\033[31m";
-string grayColorCode = "\033[90m";
+string redColorCode = "\033[38;5;1m";
+string darkRedColorCode = "\033[38;5;89m";
+string grayColorCode = "\033[38;5;59m";
 string yellowColorCode = "\033[33m";
-string greenColorCode = "\033[92m";
+string greenColorCode = "\033[38;5;46m";
 
 
 void centreOutput()
@@ -59,22 +60,38 @@ void setWordFile(int difficulty)
 {
 	if (difficulty == 1)
 	{
-		FILE_NAME = "FOUR_LETTERED_WORDS.txt";
-		WORD_SIZE = 4;
-		FILE_SIZE = 2252;
+		FILE_NAME = "SIX_LETTERED_WORDS.txt";
+		WORD_SIZE = 6;
 	}
 	else if (difficulty == 2)
 	{
 		FILE_NAME = "FIVE_LETTERED_WORDS.txt";
 		WORD_SIZE = 5;
-		FILE_SIZE = 16152;
+		//FILE_SIZE = 16152;
 	}
 	else if (difficulty == 3)
 	{
-		FILE_NAME = "SIX_LETTERED_WORDS.txt";
-		WORD_SIZE = 6;
-		FILE_SIZE = 7260;
+		FILE_NAME = "FOUR_LETTERED_WORDS.txt";
+		WORD_SIZE = 4;
 	}
+	else if (difficulty == 4)
+	{
+		FILE_NAME = "THREE_LETTERED_WORDS.txt";
+		WORD_SIZE = 3;
+	}
+
+	ifstream myFile(FILE_NAME);
+	
+	if (!myFile.is_open())
+	{
+		throw "Error";
+		return;
+	}
+
+	string size;
+	getline(myFile, size);
+	
+	FILE_SIZE = stoi(size);
 }
 
 void setRandomWordFromFile()
@@ -83,15 +100,14 @@ void setRandomWordFromFile()
 
 	if (!myFile.is_open())
 	{
-		cout << errorColorCode << "Error! opening file - Try Again Later.\n\n";
-		throw "error";
+		throw "Error";
 		return;
 	}
 
 	random_device rd;
 	mt19937 gen(rd());
 
-	uniform_int_distribution<> dist(1, FILE_SIZE);
+	uniform_int_distribution<> dist(2, FILE_SIZE);
 
 	int choosenLine = dist(gen);
 
@@ -128,9 +144,10 @@ void gameStart()
 	Input:
 	int difficulty;
 	cout << textColorCode << "Enter Difficulty:-" << endl
-		<< "\t" << greenColorCode << "1 - Easy( 4 Letter Words )" << endl
+		<< "\t" << greenColorCode << "1 - Easy( 6 Letter Words )" << endl
 		<< "\t" << yellowColorCode << "2 - Medium( 5 Letter Words )" << endl
-		<< "\t" << redColorCode << "3 - Hard( 6 Letter Words )" << endl
+		<< "\t" << redColorCode << "3 - Hard( 4 Letter Words )" << endl
+		<< "\t" << darkRedColorCode << "4 - Extra Hard( 3 Letter Words )" << endl
 		<< textColorCode << ">>> " << defaultColorCode;
 	
 	if (!(cin >> difficulty))
@@ -142,15 +159,24 @@ void gameStart()
 		goto Input;
 	}
 
-	if (difficulty < 1 || difficulty > 3)
+	if (difficulty < 1 || difficulty > 4)
 	{
 		cout << errorColorCode << "Error! Your Input is Outside the Range - Try Again" << defaultColorCode << endl << endl;
 
 		goto Input;
 	}
 
-	setWordFile(difficulty);
-	setRandomWordFromFile();
+
+	try
+	{
+		setWordFile(difficulty);
+		setRandomWordFromFile();
+	}
+	catch (...)
+	{
+		throw errorColorCode + "Error! Can't Access Word File - Try Again Later.\n\n" + defaultColorCode;
+		return;
+	}
 
 	cout << textColorCode << "" << endl << endl;
 	system("pause");
@@ -269,15 +295,15 @@ void displayLetter(char letter, int color)
 {
 	string code;
 
-	if (color == 0)
+	if (color == 0)	//Gray
 	{
 		code = "| " + grayColorCode + string(1, letter) + " " + defaultColorCode;
 	}
-	else if (color == 1)
+	else if (color == 1)	//Yellow
 	{
 		code = "| " + yellowColorCode + string(1, letter) + " " + defaultColorCode;
 	}
-	else if (color == 2)
+	else if (color == 2)	//Green
 	{
 		code = "| " + greenColorCode + string(1, letter) + " " + defaultColorCode;
 	}
@@ -292,9 +318,9 @@ void displayWord(string input, int attempt)
 
 	roundRecord.clear();
 
-	int colorCode[8] = { 0 }; // 0 - gray, 1 - yellow, 2 - green
-	bool usedInWord[8] = { false };
-	bool usedInInput[8] = { false };
+	int* colorCode = new int[WORD_SIZE] {0};
+	bool* usedInWord = new bool[WORD_SIZE] {0};
+	bool* usedInInput = new bool[WORD_SIZE] {0};
 
 	// Step 1: Mark GREEN
 	for (int i = 0; i < WORD_SIZE; i++)
@@ -339,6 +365,10 @@ void displayWord(string input, int attempt)
 
 	cout << textColorCode << "" << endl << endl << endl << endl;
 	gameRecord[currentAttempt - 1] = roundRecord;
+
+	delete[] colorCode;
+	delete[] usedInWord;
+	delete[] usedInInput;
 }
 
 
