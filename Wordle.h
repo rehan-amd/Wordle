@@ -21,6 +21,7 @@ extern string textColorCode;
 extern string errorColorCode;
 
 extern string redColorCode;
+extern string purpleColorCode;
 extern string grayColorCode;
 extern string yellowColorCode;
 extern string greenColorCode;
