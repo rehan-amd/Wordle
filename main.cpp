@@ -4,9 +4,17 @@ using namespace std;
 
 int main()
 {
-	gameStart();
+	try
+	{
+		gameStart();
+	}
+	catch (string e)
+	{
+		cout << e;
+		return 0;
+	}
 
-	string guess = "\0";
+	string guess;
 	int attempts = 5;
 	while (attempts != 0)
 	{
