@@ -67,7 +67,6 @@ void setWordFile(int difficulty)
 	{
 		FILE_NAME = "FIVE_LETTERED_WORDS.txt";
 		WORD_SIZE = 5;
-		//FILE_SIZE = 16152;
 	}
 	else if (difficulty == 3)
 	{
@@ -147,7 +146,7 @@ void gameStart()
 		<< "\t" << greenColorCode << "1 - Easy( 6 Letter Words )" << endl
 		<< "\t" << yellowColorCode << "2 - Medium( 5 Letter Words )" << endl
 		<< "\t" << redColorCode << "3 - Hard( 4 Letter Words )" << endl
-		<< "\t" << darkRedColorCode << "4 - Extra Hard( 3 Letter Words )" << endl
+		<< "\t" << purpleColorCode << "4 - Extra Hard( 3 Letter Words )" << endl
 		<< textColorCode << ">>> " << defaultColorCode;
 	
 	if (!(cin >> difficulty))
