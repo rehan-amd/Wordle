@@ -15,7 +15,7 @@ string textColorCode = "\033[93m"; //Bright Yellow
 string errorColorCode = "\033[91m"; //Light Red
 
 string redColorCode = "\033[38;5;1m";
-string darkRedColorCode = "\033[38;5;89m";
+string purpleColorCode = "\033[38;5;89m";
 string grayColorCode = "\033[38;5;59m";
 string yellowColorCode = "\033[33m";
 string greenColorCode = "\033[38;5;46m";
