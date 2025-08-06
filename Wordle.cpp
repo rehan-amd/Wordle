@@ -394,6 +394,9 @@ void displayThanks()
 {
 	cout << "Thank You For Playing. Hope You Had Fun." << defaultColorCode << endl << endl;
 	cout << "------------------------------------------------------------------------------------";
+
+	cin.ignore();
+	cin.get();
 }
 
 void GameWin()
