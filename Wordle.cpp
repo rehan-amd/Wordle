@@ -141,6 +141,7 @@ void gameStart()
 	displayInstructions();
 
 	Input:
+	string input;
 	int difficulty;
 	cout << textColorCode << "Enter Difficulty:-" << endl
 		<< "\t" << greenColorCode << "1 - Easy( 6 Letter Words )" << endl
@@ -148,13 +149,15 @@ void gameStart()
 		<< "\t" << redColorCode << "3 - Hard( 4 Letter Words )" << endl
 		<< "\t" << purpleColorCode << "4 - Extra Hard( 3 Letter Words )" << endl
 		<< textColorCode << ">>> " << defaultColorCode;
+	cin >> input;
 	
-	if (!(cin >> difficulty))
+	try
+	{
+		difficulty = stoi(input);
+	}
+	catch (...)
 	{
 		cout << errorColorCode << "Error!Input is not a Number - Try Again" << defaultColorCode << endl << endl;
-		cin.clear();
-		cin.ignore();
-		
 		goto Input;
 	}
 
