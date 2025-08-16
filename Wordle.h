@@ -11,6 +11,7 @@ extern int WORD_SIZE;
 extern int FILE_SIZE;
 extern string WORD;
 
+extern const int TOTAL_ATTEMPTS;
 extern int currentAttempt;
 
 extern string roundRecord;
@@ -21,10 +22,13 @@ extern string textColorCode;
 extern string errorColorCode;
 
 extern string redColorCode;
-extern string purpleColorCode;
-extern string grayColorCode;
 extern string yellowColorCode;
 extern string greenColorCode;
+extern string purpleColorCode;
+extern string grayColorCode;
+extern string blackColorCode;
+
+void GAME();
 
 void centreOutput();
 void lineSeparator();
@@ -35,6 +39,7 @@ void setWordFile(int);
 void setRandomWordFromFile();
 
 void gameStart();
+void gameRun();
 
 void setWordToUpperCase(string&);
 bool isLetterInWord(char);
@@ -45,7 +50,8 @@ bool isMatch(string);
 void displayWord(string, int);
 
 
-void displayThanks();
 void showRecord();
-void GameWin();
-void GameLost();
+void playAgain(string&);
+void gameWin();
+void gameLost();
+void displayThanks();
